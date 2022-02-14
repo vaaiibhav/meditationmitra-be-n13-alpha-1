@@ -5,9 +5,13 @@ const router = express.Router();
 const Courses = require("../../models/courses");
 
 router.get("/", async (req, res) => {
-  const courses = await Courses.find();
+  const courses = await Courses.find().populate("createdBy");
   res.send(courses);
 });
 
-router.post("/");
+router.post("/addcourse",async (req, res) => {
+  
+  const courses = await Courses.insert({});
+  res.send(courses);
+  });
 module.exports = router;

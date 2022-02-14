@@ -4,23 +4,27 @@ const { Schema } = Mongoose;
 
 // Courses Schema
 const CourseSchema = new Schema({
+  _id: Mongoose.Schema.Types.ObjectId,
   title: {
     type: String,
   },
   author: {
     type: String,
   },
-  startdate: {
+  startDate: {
     type: String,
   },
-  createdat: {
+  createdAt: {
     type: String,
   },
   section: {
     type: Array,
-    default: "No Sections",
+    default: [0],
   },
-
+  createdBy:{
+    type: Mongoose.Schema.Types.ObjectId,
+    ref:  "User"
+  },
   created: {
     type: Date,
     default: Date.now,

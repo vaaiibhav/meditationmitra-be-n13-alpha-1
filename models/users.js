@@ -4,6 +4,7 @@ const { Schema } = Mongoose;
 
 // User Schema
 const UserSchema = new Schema({
+  _id: Mongoose.Schema.Types.ObjectId,
   email: {
     type: String,
   },
@@ -18,11 +19,15 @@ const UserSchema = new Schema({
   },
   role: {
     type: String,
-    default: "ROLE_MEMBER",
-    enum: ["ROLE_MEMBER", "ROLE_COACH"],
+    default: "member",
+    enum: ["member", "coach"],
   },
-  updated: Date,
-  created: {
+  userCourses: {
+    type: Mongoose.Schema.Types.ObjectId,
+    ref:  "Courses"
+  },
+  userUpdated: Date,
+  userCreated: {
     type: Date,
     default: Date.now,
   },
