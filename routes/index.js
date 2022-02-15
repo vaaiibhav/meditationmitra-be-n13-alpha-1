@@ -7,11 +7,9 @@ const courseRoutes = require("./api/course");
 
 router.use("/user", userRoutes);
 router.use("/course", courseRoutes);
-router.get("/", (req,res)=>{
-    res.send("home api")
-})
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Meditation Mitra Backend' });
+  res.send({ title: 'Meditation Mitra Backend' });
 });
 module.exports = router;

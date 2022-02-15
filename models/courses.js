@@ -21,6 +21,10 @@ const CourseSchema = new Schema({
     type: Array,
     default: [0],
   },
+  category: {
+    type: Mongoose.Schema.Types.ObjectId,
+    ref:  "Category"
+  },
   createdBy:{
     type: Mongoose.Schema.Types.ObjectId,
     ref:  "User"
