@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 // Models and Helpers
-const Courses = require("../../models/courses");
+const Courses = require("../../models/course");
 // Get all Courses
 router.get("/", async (req, res) => {
   const courses = await Courses.find()

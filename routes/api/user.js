@@ -1,74 +1,58 @@
 const express = require("express");
 const router = express.Router();
+const { crossOriginResourcePolicy } = require("helmet");
 
-const bcrypt = require("bcrypt");
+
 
 // Models and Helpers
-const auth = require("../../helpers/auth");
-const User = require("../../models/users");
-// Get all users
-router.get("/", async (req, res) => {
-  const users = await User.find().populate("courses");
-  res.send(users);
-});
+const {auth,generateToken} = require("../../middleware/auth");
+const Course = require("../../models/course");
+const User = require("../../models/user");
+
+
+// // Get all users
+// router.get("/", async (req, res) => {
+//   const users = await User.find().populate("courses");
+//   res.send(users);
+// });
+
+
 // Login post
-router.post("/login", auth, async (req, res) => {});
+router.post("/login",async (req, res) => {
+  const {email,firstName,lastName,avatar} = req.body;
+  let isNewUser=false;
+ 
+  let user =  await User.findOne({email}).catch((err)=>{console.log(err)});
+ if(!user){
+    const newUser = new User({email,firstName,lastName,avatar});
+    user = await newUser.save().catch((err)=>{console.log(err)});
+    isNewUser= true;
+  }
+  const token = generateToken(user);
+  res.status(200).send({user,isNewUser,token});
+});
 
 // Signup Post
-router.post("/signup", async (req, res, next) => {
-  User.find({ email: req.body.email })
-    .exec()
-    .then((user) => {
-      if (user.length >= 1) {
-        return res.status(409).json({
-          message: "Mail exists",
-        });
-      } else {
-        bcrypt.hash(req.body.password, 10, (err, hash) => {
-          if (err) {
-            return res.status(500).json({
-              error: err,
-            });
-          } else {
-            const user = new User({
-              _id: new mongoose.Types.ObjectId(),
-              email: req.body.email,
-              password: hash,
-            });
-            user
-              .save()
-              .then((result) => {
-                console.log(result);
-                res.status(201).json({
-                  message: "User created",
-                });
-              })
-              .catch((err) => {
-                console.log(err);
-                res.status(500).json({
-                  error: err,
-                });
-              });
-          }
-        });
-      }
-    });
+router.post("/update-role",auth, async (req, res, next) => {
+  const {email} = req.user;
+  const {role} = req.body;
+ let user = await User.findOne({ email })
+ if(user){ 
+  user.role = role;
+  await user.save();
+  return res.status(200).send({user});
+ }
+  res.status(400).send("Invalid User");
 });
-// Delete User
-router.delete("/:userId", (req, res, next) => {
-  User.remove({ _id: req.params.userId })
-    .exec()
-    .then((result) => {
-      res.status(200).json({
-        message: "User deleted",
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
-    });
+
+
+// Get Specific User
+router.get("/profile",auth,async (req, res) => {
+  const {email} = req.user;
+  const user = await User.findOne({email});
+  const courses = await Course.find({ _id: { $in: user.courses } })
+  user.courses= courses;
+  res.send(user);
 });
 
 module.exports = router;

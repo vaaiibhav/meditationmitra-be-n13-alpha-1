@@ -7,13 +7,14 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
 const helmet = require('helmet');
-
 const keys = require('./config/keys');
-
 const routes = require('./routes');
+var bodyParser = require('body-parser')
 
 const { database, port } = keys;
 const app = express();
+
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
